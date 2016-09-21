@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.creaturecoding.fastdelprefs</string>
+			<key>key</key>
+			<string>enableTweak</string>
+			<key>label</key>
+			<string>Enabled</string>
+			<key>PostNotification</key>
+			<string>com.creaturecoding.fastdelprefs/preferences.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Cursor speed lower = faster</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<string>0.075</string>
+			<key>min</key>
+			<string>0.0</string>
+			<key>max</key>
+			<string>0.50</string>
+			<key>showValue</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.creaturecoding.fastdelprefs</string>
+			<key>key</key>
+			<string>speed</string>
+			<key>label</key>
+			<string>Enable</string>
+			<key>PostNotification</key>
+			<string>com.creaturecoding.fastdelprefs/preferences.changed</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>FastDel</string>
+</dict>
+</plist>

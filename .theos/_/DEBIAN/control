@@ -1,0 +1,10 @@
+Package: com.creaturecoding.fastdel
+Name: FastDel
+Depends: mobilesubstrate
+Architecture: iphoneos-arm
+Description: this tweak disables the annoying delete word function and enables rapid character deletion instantly.
+Maintainer: CreatureSurvive
+Author: CreatureSurvive
+Section: Tweaks
+Version: 0.0.1-25+debug
+Installed-Size: 280

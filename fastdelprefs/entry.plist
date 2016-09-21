@@ -1,0 +1,10 @@
+{
+    entry = {
+			bundle = fastdelprefs;
+			cell = PSLinkCell;
+			detail = fastdelprefsListController;
+			icon = fastdelprefs.png;
+			isController = 1;
+			label = FastDel;
+    };
+}
