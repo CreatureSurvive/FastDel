@@ -1,3 +1,4 @@
+//Preference
 #include <CoreFoundation/CFNotificationCenter.h>
 #import <Foundation/NSUserDefaults.h>
 
@@ -11,7 +12,7 @@
 static NSString *domainString = @"com.creaturecoding.fastdelprefs";
 static NSString *notificationString = @"com.creaturecoding.fastdelprefs/preferences.changed";
 
-//Variables
+//Tweak Variables
 static BOOL enableTweak = YES;
 static double speed = 0.08;
 
