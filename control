@@ -5,5 +5,6 @@ Version: 0.0.1
 Architecture: iphoneos-arm
 Description: This tweak disables the annoying delete word function and enables rapid character deletion instantly.
 Maintainer: CreatureSurvive
+depiction: https://creaturesurvive.com/depictions/com.creaturecoding.fastdel/index.html
 Author: CreatureSurvive
 Section: Tweaks

@@ -1,20 +1,20 @@
-//Preference
-#include <CoreFoundation/CFNotificationCenter.h>
-#import <Foundation/NSUserDefaults.h>
 
-//Preference Setup
-@interface NSUserDefaults (UFS_Category)
-- (id)objectForKey:(NSString *)key inDomain:(NSString *)domain;
-- (void)setObject:(id)value forKey:(NSString *)key inDomain:(NSString *)domain;
-@end
+//prefs
+#define PREFS_BUNDLE_ID (@"com.creatix.fdprefs")
 
-//Preference Variables
-static NSString *domainString = @"com.creaturecoding.fastdelprefs";
-static NSString *notificationString = @"com.creaturecoding.fastdelprefs/preferences.changed";
+NSDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/User/Library/Preferences/com.creaturecoding.fastdel.plist"];
 
-//Tweak Variables
-static BOOL enableTweak = YES;
-static double speed = 0.08;
+static bool enabled = [[prefs objectForKey:@"Enabled"] boolValue];
+static double cursorThreshold = [[prefs objectForKey:@"cursorThreshold"] doubleValue];
+
+static void reloadPrefs() {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/User/Library/Preferences/com.creaturecoding.fastdel.plist"];
+
+		enabled = [[prefs objectForKey:@"Enabled"] boolValue];
+		cursorThreshold = [[prefs objectForKey:@"cursorThreshold"] doubleValue];
+	});
+}
 
 //Tweak Code
 @interface UIKeyboardImpl
@@ -24,36 +24,23 @@ static double speed = 0.08;
 %hook UIKeyboardImpl
 
 -(void)completeHandleAutoDelete {
-	if(enableTweak == YES){
+	if(enabled){
 		return;
 	}
 	%orig;
 }
 
 -(void)touchAutoDeleteTimerWithThreshold:(double)threshold {
-	if (enableTweak == YES){
-		threshold = speed;
+	if (enabled){
+		threshold = cursorThreshold;
 	}
 	%orig(threshold);
 }
 %end;
 
-//Preferences
-static void notificationCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-
-	NSNumber *a = (NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"enableTweak" inDomain:domainString];
-	enableTweak = (a)? [a boolValue]:YES;
-	NSString *b = (NSString *)[[NSUserDefaults standardUserDefaults] objectForKey:@"speed" inDomain:domainString];
-	speed = (b)? [b doubleValue]:0.08;
-}
-
-//Receiver for preferences
 %ctor {
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
-	//set initial `enable' variable
-	notificationCallback(NULL, NULL, NULL, NULL, NULL);
-
-	//Register for notifications
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, notificationCallback, (CFStringRef)notificationString, NULL, CFNotificationSuspensionBehaviorCoalesce);
-	[pool release];
+	reloadPrefs();
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL,
+        (CFNotificationCallback)reloadPrefs,
+        CFSTR("com.creaturecoding.fastdel.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 }

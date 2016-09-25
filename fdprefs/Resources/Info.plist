@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>fastdelprefs</string>
+	<string>fdprefs</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.creaturecoding.fastdelprefs</string>
+	<string>com.creaturecoding.fdprefs</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
@@ -19,6 +19,6 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSPrincipalClass</key>
-	<string>fastdelprefsListController</string>
+	<string>FDPRootListController</string>
 </dict>
 </plist>
