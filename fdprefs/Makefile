@@ -1,6 +1,6 @@
 include $(THEOS)/makefiles/common.mk
 
-FINALPACKAGE = 1
+FINALPACKAGE = 0
 
 BUNDLE_NAME = fdprefs
 fdprefs_FILES = FDPRootListController.m

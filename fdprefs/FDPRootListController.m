@@ -2,14 +2,15 @@
 
 @implementation FDPRootListController
 
+// gets the specifiers from Root.plist
 - (id)specifiers {
 	if(_specifiers == nil) {
-		//dlopen("/System/Library/PreferenceBundles/AccessibilitySettings.bundle/AccessibilitySettings", RTLD_LAZY | RTLD_NOLOAD);
 		_specifiers = [[self loadSpecifiersFromPlistName:@"Root" target:self] retain];
 	}
 	return _specifiers;
 }
 
+// Respring methon
 - (void)respring {
 	#pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -17,21 +18,25 @@
 	#pragma GCC diagnostic pop
 }
 
+// launch Github
 - (void)github {
 	NSURL *githubURL = [NSURL URLWithString:@"https://github.com/creaturesurvive"];
 	[[UIApplication sharedApplication] openURL:githubURL];
 }
 
+// launch Email
 - (void)contact {
 	NSURL *url = [NSURL URLWithString:@"mailto:dbuehre@gmail.com?subject=FastDel"];
 	[[UIApplication sharedApplication] openURL:url];
 }
 
+// launch PayPal
 - (void)paypal {
 	NSURL *url = [NSURL URLWithString:@"https://paypal.me/creaturesurvive"];
 	[[UIApplication sharedApplication] openURL:url];
 }
 
+// launch Twitter
 - (void)twitter {
 	NSString *user = @"creaturesurvive";
 	if([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tweetbot:"]])

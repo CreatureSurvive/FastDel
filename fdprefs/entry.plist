@@ -2,7 +2,7 @@
   entry = {
 	bundle = fdprefs;
 	cell = PSLinkCell;
-	detail = PeekaBooListController;
+	detail = FDPRootListController;
 	icon = fastdel.png;
 	isController = 1;
 	label = FastDel;

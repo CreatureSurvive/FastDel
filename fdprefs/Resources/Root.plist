@@ -60,7 +60,7 @@
 			<key>footerText</key>
 			<string>lower = faster a little goes a long way</string>
 		</dict>
-		<!-- <dict>
+		<dict>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
@@ -73,7 +73,7 @@
 			<string>smoothingEnabled</string>
 			<key>label</key>
 			<string>Enable/Disable Cursor Smoothing</string>
-		</dict> -->
+		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSSliderCell</string>
