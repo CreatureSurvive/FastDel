@@ -1,5 +1,5 @@
 //prefs
-#define PREFS_BUNDLE_ID (@"com.creaturecoding.fdprefs")
+// #define PREFS_BUNDLE_ID (@"com.creaturecoding.fdprefs")
 
 NSDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/User/Library/Preferences/com.creaturecoding.fastdel.plist"];
 
@@ -45,7 +45,7 @@ static void reloadPrefs() {
 	%end
 %end
 
-%group ios6
+%group legacy
 	%hook UIKeyboardImpl
 
 		// disable word delete ios6 only
@@ -65,7 +65,7 @@ static void reloadPrefs() {
 		}
 	%end
 %end
-
+%group latest
 %hook UITextSelectionView
 	// adjust cursor animation speed ios6 &^
 	- (void)updateSelectionRects
@@ -80,6 +80,24 @@ static void reloadPrefs() {
 	}
 
 %end
+%end
+
+%group legacy
+%hook UITextSelectionView
+	// adjust cursor animation speed ios6 &^
+	- (void)updateSelectionRects
+	{
+		if (enabled && smoothingEnabled) {
+				[UIView animateWithDuration:cursorAnimSpeed animations:^{
+					%orig;
+			}];
+		}else {
+			%orig;
+		}
+	}
+
+%end
+%end
 
 
 // load prefs
@@ -87,7 +105,7 @@ static void reloadPrefs() {
 	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
         %init(latest);
     } else {
-        %init(ios6);
+        %init(legacy);
     }
 	reloadPrefs();
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL,
