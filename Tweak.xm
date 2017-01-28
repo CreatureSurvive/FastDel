@@ -1,114 +1,169 @@
-//prefs
-// #define PREFS_BUNDLE_ID (@"com.creaturecoding.fdprefs")
+#define _plistfile (@"/User/Library/Preferences/com.creaturesurvive.fastdel.plist")
+#define _prefsChanged "com.creaturesurvive.fastdel.prefschanged"
 
-NSDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/User/Library/Preferences/com.creaturecoding.fastdel.plist"];
+// Variables
+static bool enabled = YES;
+static bool smoothingEnabled;
+static double cursorThreshold;
+static float cursorAnimSpeed;
 
-static bool enabled = [[prefs objectForKey:@"Enabled"] boolValue];
-static bool smoothingEnabled = [[prefs objectForKey:@"smoothingEnabled"] boolValue];
-static double cursorThreshold = [[prefs objectForKey:@"cursorThreshold"] doubleValue];
-static float cursorAnimSpeed = [[prefs objectForKey:@"cursorAnimSpeed"] floatValue];
 
-static void reloadPrefs() {
-	dispatch_async(dispatch_get_main_queue(), ^{
-		prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/User/Library/Preferences/com.creaturecoding.fastdel.plist"];
+// Functions
+static void LoadSettings(){
+    NSMutableDictionary *preferences = [[NSMutableDictionary alloc] initWithContentsOfFile:_plistfile];
 
-		enabled = [[prefs objectForKey:@"Enabled"] boolValue];
-		smoothingEnabled = [[prefs objectForKey:@"smoothingEnabled"] boolValue];
-		cursorThreshold = [[prefs objectForKey:@"cursorThreshold"] doubleValue];
-		cursorAnimSpeed = [[prefs objectForKey:@"cursorAnimSpeed"] floatValue];
-	});
+    if (preferences == nil) {
+        enabled = NO;
+    } else {
+        enabled = preferences[@"enabled"] ? [preferences[@"enabled"] boolValue] : YES;
+        smoothingEnabled = preferences[@"smoothingEnabled"] ? [preferences[@"smoothingEnabled"] boolValue] : YES;
+        cursorThreshold = preferences[@"cursorThreshold"] ? [preferences[@"cursorThreshold"] doubleValue] : 0.06;
+        cursorAnimSpeed = preferences[@"cursorAnimSpeed"] ? [preferences[@"cursorAnimSpeed"] floatValue] : 0.2;
+    }
+
+    // [preferences release];
+    HBLogInfo(@"enabled : %@ | smoothingEnabled : %@ | cursorThreshold : %@ | cursorAnimSpeed : %@", @(enabled).stringValue, @(smoothingEnabled).stringValue, @(cursorThreshold).stringValue, @(cursorAnimSpeed).stringValue);
 }
 
-// // Tweak Code
-
-// donet even know if i need this
-// @interface UIKeyboardImpl
-// 	+(id)sharedInstance;
-// @end
-%group latest
-	%hook UIKeyboardImpl
-		// disable word delete 7.0 - 9.3.3
-		-(void)completeHandleAutoDelete {
-			if(enabled){
-				return;
-			}
-			%orig;
-		}
-
-		// adjust delete speed 6.0 - 9.3.3
-		-(void)touchAutoDeleteTimerWithThreshold:(double)threshold {
-			if (enabled){
-				threshold = cursorThreshold;
-			}
-			%orig(threshold);
-		}
-	%end
-%end
-
-%group legacy
-	%hook UIKeyboardImpl
-
-		// disable word delete ios6 only
-		-(void)handleAutoDelete {
-			if(enabled){
-				return;
-			}
-			%orig;
-		}
-
-		// adjust delete speed 6.0 - 9.3.3
-		-(void)touchAutoDeleteTimerWithThreshold:(double)threshold {
-			if (enabled){
-				threshold = cursorThreshold;
-			}
-			%orig(threshold);
-		}
-	%end
-%end
-%group latest
-%hook UITextSelectionView
-	// adjust cursor animation speed ios6 &^
-	- (void)updateSelectionRects
-	{
-		if (enabled && smoothingEnabled) {
-				[UIView animateWithDuration:cursorAnimSpeed animations:^{
-					%orig;
-			}];
-		}else {
-			%orig;
-		}
-	}
-
-%end
-%end
-
-%group legacy
-%hook UITextSelectionView
-	// adjust cursor animation speed ios6 &^
-	- (void)updateSelectionRects
-	{
-		if (enabled && smoothingEnabled) {
-				[UIView animateWithDuration:cursorAnimSpeed animations:^{
-					%orig;
-			}];
-		}else {
-			%orig;
-		}
-	}
-
-%end
-%end
-
-
-// load prefs
-%ctor {
-	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
-        %init(latest);
-    } else {
-        %init(legacy);
+static void TweakReceivedNotification(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo){
+    NSString *notificationName = (__bridge NSString *)name;
+    if ([notificationName isEqualToString:[NSString stringWithUTF8String:_prefsChanged]]) {
+        LoadSettings();
     }
-	reloadPrefs();
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL,
-        (CFNotificationCallback)reloadPrefs,
-        CFSTR("com.creaturecoding.fastdel.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+}
+
+%group IOS_VERSION_10
+%hook UIKeyboardImpl
+// disable word delete 7.0 - 10.0
+-(void)completeHandleAutoDelete {
+    if (enabled) {
+        return;
+    }
+    %orig;
+}
+
+// adjust delete speed 6.0 - 10.0
+- (void)touchAutoDeleteTimerWithThreshold:(double)threshold adjustForPartialCompletion:(BOOL)completion {
+    if (enabled) {
+        threshold = cursorThreshold;
+    }
+    %orig(threshold, completion);
+}
+
+%end
+%end
+
+%group IOS_VERSION_10
+%hook UITextSelectionView
+// adjust cursor animation speed ios6 &^
+- (void)updateSelectionRects
+{
+    if (enabled && smoothingEnabled) {
+        [UIView animateWithDuration:cursorAnimSpeed animations:^{
+            %orig;
+        }];
+    } else {
+        %orig;
+    }
+}
+
+%end
+%end
+
+%group IOS_VERSION_7_8_9
+%hook UIKeyboardImpl
+// disable word delete 7.0 - 9.3.3
+-(void)completeHandleAutoDelete {
+    if (enabled) {
+        return;
+    }
+    %orig;
+}
+
+// adjust delete speed 6.0 - 9.3.3
+- (void)touchAutoDeleteTimerWithThreshold:(double)threshold {
+    if (enabled) {
+        threshold = cursorThreshold;
+    }
+    %orig(threshold);
+}
+
+%end
+%end
+
+%group LEGACY_IOS_VERSION
+%hook UIKeyboardImpl
+
+// disable word delete ios6 only
+-(void)handleAutoDelete {
+    if (enabled) {
+        return;
+    }
+    %orig;
+}
+
+// adjust delete speed 6.0 - 9.3.3
+- (void)touchAutoDeleteTimerWithThreshold:(double)threshold {
+    if (enabled) {
+        threshold = cursorThreshold;
+    }
+    %orig(threshold);
+}
+
+%end
+%end
+%group IOS_VERSION_7_8_9
+%hook UITextSelectionView
+// adjust cursor animation speed ios6 &^
+- (void)updateSelectionRects
+{
+    if (enabled && smoothingEnabled) {
+        [UIView animateWithDuration:cursorAnimSpeed animations:^{
+            %orig;
+        }];
+    } else {
+        %orig;
+    }
+}
+
+%end
+%end
+
+%group LEGACY_IOS_VERSION
+%hook UITextSelectionView
+// adjust cursor animation speed ios6 &^
+- (void)updateSelectionRects
+{
+    if (enabled && smoothingEnabled) {
+        [UIView animateWithDuration:cursorAnimSpeed animations:^{
+            %orig;
+        }];
+    } else {
+        %orig;
+    }
+}
+
+%end
+%end
+
+// Initialize
+%ctor
+{
+    @autoreleasepool {
+        LoadSettings();
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+                                        NULL,
+                                        TweakReceivedNotification,
+                                        CFSTR(_prefsChanged),
+                                        NULL,
+                                        CFNotificationSuspensionBehaviorCoalesce
+                                        );
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0 && [[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
+            %init(IOS_VERSION_7_8_9);
+        } else if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0) {
+            %init(IOS_VERSION_10);
+        } else {
+            %init(LEGACY_IOS_VERSION);
+        }
+    }
 }

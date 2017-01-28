@@ -1,9 +1,9 @@
 {
   entry = {
-	bundle = fdprefs;
+	bundle = FastDel;
 	cell = PSLinkCell;
-	detail = FDPRootListController;
-	icon = fastdel.png;
+	detail = FDPrefs_RootListController;
+	icon = icon.png;
 	isController = 1;
 	label = FastDel;
     };

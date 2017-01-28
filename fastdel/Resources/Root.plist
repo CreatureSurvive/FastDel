@@ -1,30 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
+<?xml version=1.0 encoding=UTF-8?>
+<!DOCTYPE plist PUBLIC -//Apple//DTD PLIST 1.0//EN http://www.apple.com/DTDs/PropertyList-1.0.dtd>
+<plist version=1.0>
 <dict>
 	<key>items</key>
 	<array>
 		<dict>
-	    <key>cell</key>
-	    <string>PSStaticTextCell</string>
-	    <key>height</key>
-	    <string>128</string>
-			<key>icon</key>
-	    <string>banner.png</string>
-		</dict>
-		<dict>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
-			<key>default</key>
-			<true/>
-			<key>defaults</key>
-			<string>com.creaturecoding.fastdel</string>
-			<key>PostNotification</key>
-			<string>com.creaturecoding.fastdel.prefschanged</string>
-			<key>key</key>
-			<string>Enabled</string>
 			<key>label</key>
 			<string>Enable/Disable FastDel</string>
+			<key>key</key>
+			<string>enabled</string>
+			<key>default</key>
+			<false/>
+			<key>PostNotification</key>
+			<string>com.creaturesurvive.fastdel.prefschanged</string>
+			<key>defaults</key>
+			<string>com.creaturesurvive.fastdel</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -38,11 +30,11 @@
 			<key>cell</key>
 			<string>PSSliderCell</string>
 			<key>defaults</key>
-			<string>com.creaturecoding.fastdel</string>
+			<string>com.creaturesurvive.fastdel</string>
 			<key>PostNotification</key>
-			<string>com.creaturecoding.fastdel.prefschanged</string>
+			<string>com.creaturesurvive.fastdel.prefschanged</string>
 			<key>default</key>
-			<real>0.08</real>
+			<real>0.06</real>
 			<key>min</key>
 			<real>0</real>
 			<key>max</key>
@@ -66,9 +58,9 @@
 			<key>default</key>
 			<true/>
 			<key>defaults</key>
-			<string>com.creaturecoding.fastdel</string>
+			<string>com.creaturesurvive.fastdel</string>
 			<key>PostNotification</key>
-			<string>com.creaturecoding.fastdel.prefschanged</string>
+			<string>com.creaturesurvive.fastdel.prefschanged</string>
 			<key>key</key>
 			<string>smoothingEnabled</string>
 			<key>label</key>
@@ -78,11 +70,11 @@
 			<key>cell</key>
 			<string>PSSliderCell</string>
 			<key>defaults</key>
-			<string>com.creaturecoding.fastdel</string>
+			<string>com.creaturesurvive.fastdel</string>
 			<key>PostNotification</key>
-			<string>com.creaturecoding.fastdel.prefschanged</string>
+			<string>com.creaturesurvive.fastdel.prefschanged</string>
 			<key>default</key>
-			<real>0.2</real>
+			<real>0.25</real>
 			<key>min</key>
 			<real>0</real>
 			<key>max</key>
@@ -96,7 +88,7 @@
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 			<key>defaults</key>
-			<string>com.creaturecoding.fastdel</string>
+			<string>com.creaturesurvive.fastdel</string>
 			<key>default</key>
 			<string>Give It A Try</string>
 			<key>detail</key>
@@ -107,22 +99,6 @@
 			<string></string>
 			<key>placeholder</key>
 			<string>Give it a try.</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>you only need to respring for changes to take effect on the SpringBoard, i.e. Spotlight Search. no need to respring for changes to take effect in apps</string>
-		</dict>
-		<dict>
-			<key>action</key>
-			<string>respring</string>
-			<key>cell</key>
-			<string>PSButtonCell</string>
-			<key>icon</key>
-			<string>respring.png</string>
-			<key>label</key>
-			<string>Respring</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -138,7 +114,7 @@
 			<key>icon</key>
 			<string>email.png</string>
 			<key>label</key>
-			<string>Email me</string>
+			<string>Support</string>
 		</dict>
 		<dict>
 			<key>action</key>
