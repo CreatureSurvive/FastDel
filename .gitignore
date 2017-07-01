@@ -20,5 +20,7 @@ so
 ehthumbs.db
 Thumbs.db
 
+.theos/
+packages/
 obj/
 _/

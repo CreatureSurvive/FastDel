@@ -1,3 +1,15 @@
+/**
+ * @Author: Dana Buehre <creaturesurvive>
+ * @Date:   28-01-2017 12:51:15
+ * @Email:  dbuehre@me.com
+ * @Project: motuumLS
+ * @Filename: Tweak.xm
+ * @Last modified by:   creaturesurvive
+ * @Last modified time: 01-07-2017 1:50:29
+ * @Copyright: Copyright © 2014-2017 CreatureSurvive
+ */
+
+
 #define _plistfile (@"/User/Library/Preferences/com.creaturesurvive.fastdel.plist")
 #define _prefsChanged "com.creaturesurvive.fastdel.prefschanged"
 
@@ -20,9 +32,6 @@ static void LoadSettings(){
         cursorThreshold = preferences[@"cursorThreshold"] ? [preferences[@"cursorThreshold"] doubleValue] : 0.06;
         cursorAnimSpeed = preferences[@"cursorAnimSpeed"] ? [preferences[@"cursorAnimSpeed"] floatValue] : 0.2;
     }
-
-    // [preferences release];
-    HBLogInfo(@"enabled : %@ | smoothingEnabled : %@ | cursorThreshold : %@ | cursorAnimSpeed : %@", @(enabled).stringValue, @(smoothingEnabled).stringValue, @(cursorThreshold).stringValue, @(cursorAnimSpeed).stringValue);
 }
 
 static void TweakReceivedNotification(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo){
@@ -34,8 +43,15 @@ static void TweakReceivedNotification(CFNotificationCenterRef center, void *obse
 
 %group IOS_VERSION_10
 %hook UIKeyboardImpl
+- (double)timestampOfLastTouchesEnded {
+    if (enabled) {
+        return 0;
+    }
+    return %orig;
+}
+
 // disable word delete 7.0 - 10.0
--(void)completeHandleAutoDelete {
+- (void)completeHandleAutoDelete {
     if (enabled) {
         return;
     }
@@ -50,10 +66,8 @@ static void TweakReceivedNotification(CFNotificationCenterRef center, void *obse
     %orig(threshold, completion);
 }
 
-%end
-%end
+%end // UIKeyboardImpl
 
-%group IOS_VERSION_10
 %hook UITextSelectionView
 // adjust cursor animation speed ios6 &^
 - (void)updateSelectionRects
@@ -67,10 +81,26 @@ static void TweakReceivedNotification(CFNotificationCenterRef center, void *obse
     }
 }
 
-%end
-%end
+%end // UITextSelectionView
+
+%end // IOS_VERSION_10
 
 %group IOS_VERSION_7_8_9
+%hook UITextSelectionView
+// adjust cursor animation speed ios6 &^
+- (void)updateSelectionRects
+{
+    if (enabled && smoothingEnabled) {
+        [UIView animateWithDuration:cursorAnimSpeed animations:^{
+            %orig;
+        }];
+    } else {
+        %orig;
+    }
+}
+
+%end // UITextSelectionView
+
 %hook UIKeyboardImpl
 // disable word delete 7.0 - 9.3.3
 -(void)completeHandleAutoDelete {
@@ -88,10 +118,25 @@ static void TweakReceivedNotification(CFNotificationCenterRef center, void *obse
     %orig(threshold);
 }
 
-%end
-%end
+%end //UIKeyboardImpl
+
+%end // IOS_VERSION_7_8_9
 
 %group LEGACY_IOS_VERSION
+%hook UITextSelectionView
+// adjust cursor animation speed ios6 &^
+- (void)updateSelectionRects {
+    if (enabled && smoothingEnabled) {
+        [UIView animateWithDuration:cursorAnimSpeed animations:^{
+            %orig;
+        }];
+    } else {
+        %orig;
+    }
+}
+
+%end // UITextSelectionView
+
 %hook UIKeyboardImpl
 
 // disable word delete ios6 only
@@ -110,45 +155,12 @@ static void TweakReceivedNotification(CFNotificationCenterRef center, void *obse
     %orig(threshold);
 }
 
-%end
-%end
-%group IOS_VERSION_7_8_9
-%hook UITextSelectionView
-// adjust cursor animation speed ios6 &^
-- (void)updateSelectionRects
-{
-    if (enabled && smoothingEnabled) {
-        [UIView animateWithDuration:cursorAnimSpeed animations:^{
-            %orig;
-        }];
-    } else {
-        %orig;
-    }
-}
+%end // UIKeyboardImpl
 
-%end
-%end
-
-%group LEGACY_IOS_VERSION
-%hook UITextSelectionView
-// adjust cursor animation speed ios6 &^
-- (void)updateSelectionRects
-{
-    if (enabled && smoothingEnabled) {
-        [UIView animateWithDuration:cursorAnimSpeed animations:^{
-            %orig;
-        }];
-    } else {
-        %orig;
-    }
-}
-
-%end
-%end
+%end // LEGACY_IOS_VERSION
 
 // Initialize
-%ctor
-{
+%ctor {
     @autoreleasepool {
         LoadSettings();
         CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
@@ -158,6 +170,7 @@ static void TweakReceivedNotification(CFNotificationCenterRef center, void *obse
                                         NULL,
                                         CFNotificationSuspensionBehaviorCoalesce
                                         );
+
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0 && [[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
             %init(IOS_VERSION_7_8_9);
         } else if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0) {

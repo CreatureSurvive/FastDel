@@ -1,7 +1,7 @@
 Package: com.creaturecoding.fastdel
 Name: FastDel
 Depends: mobilesubstrate
-Version: 0.1
+Version: 0.3
 Architecture: iphoneos-arm
 Description: disable the annoying delete word function and enables rapid character deletion instantly.
 Maintainer: CreatureSurvive <dbuehre@me.com>
